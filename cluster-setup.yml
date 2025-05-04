@@ -1,0 +1,75 @@
+---
+- name: Configure Kubernetes Master
+  hosts: master_nodes
+  become: yes
+  roles:
+    - kubernetes_master
+
+- name: Configure and install Helm
+  hosts: master_nodes
+  become: yes
+  roles:
+    - helm_install
+
+- name: Configure Kubernetes Network
+  hosts: master_nodes
+  become: yes
+  roles:
+    - kubernetes_network
+
+- name: Configure Kubernetes all nodes
+  hosts: all_nodes
+  become: yes
+  roles:
+    - kubernetes_all_nodes
+
+- name: add multi-master node to cluster
+  hosts: join_master_nodes
+  become: yes
+  roles:
+    - kubernetes_join_master
+
+- name: add worker node to cluster
+  hosts: join_worker_nodes
+  become: yes
+  roles:
+    - kubernetes_join_worker
+
+- name: Configure and install argocd
+  hosts: master_nodes
+  become: yes
+  roles:
+    - kubernetes_argoCD
+
+- name: Configure and install kubernetes_dashboard
+  hosts: master_nodes
+  become: yes
+  roles:
+    - kubernetes_dashboard
+
+- name: Configure and install kubernetes monitoring
+  hosts: master_nodes
+  become: yes
+  roles:
+    - kubernetes_monitoring
+
+- name: Configure and install kubernetes_dashboard user
+  hosts: master_nodes
+  become: yes
+  roles:
+    - k8s-dashboard-user    
+
+- name: Configure and install kubernetes nfs storageClass
+  hosts: master_nodes
+  become: yes
+  roles:
+    - kubernetes_nfs-storageClass    
+
+- name: Configure and install kubernetes api-SIX
+  hosts: master_nodes
+  become: yes
+  roles:
+    - kubernetes_apisix
+
+
+
