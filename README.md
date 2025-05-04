@@ -1,58 +1,84 @@
-##Install Kubernetes cluster Using Ansible on Ubuntu 24.04
+🚀 Install Kubernetes Cluster Using Ansible on Ubuntu 24.04
+📝 Introduction
 
-## Introduction 
+Setting up a Kubernetes cluster on Ubuntu 24.04 manually can be a time-consuming and error-prone task. Ansible—a powerful open-source automation tool—simplifies this process by automating the provisioning and configuration of all required components. This guide will walk you through deploying a production-ready Kubernetes cluster on Ubuntu 24.04 using Ansible roles.
 
-Deploying Kubernetes on Ubuntu 24.04 can be a complex task. However, using Ansible roles simplifies this process significantly. Ansible, an open-source automation tool, allows you to automate and manage configuration tasks efficiently. In a previous article, we reviewed how to manually deploy Kubernetes on Ubuntu 23.10. In this guide, we will walk through the steps to deploy a Kubernetes cluster on Ubuntu 24.04 using Ansible roles
+    Note: In our previous guide, we demonstrated manual deployment on Ubuntu 23.10. This version improves on that by using automation with Ansible.
 
-## Prerequisites
+✅ Prerequisites
 
-Before we begin, ensure you have the following:
+Before proceeding, ensure the following requirements are met:
 
-1. A stable internet connection
-2. A control node with Ansible installed (preferably Ubuntu 24.04).
-3. At least two Ubuntu 24.04 nodes (one master and one worker).
-4. SSH access to all nodes from the control node.
-5. Establish a user account with sudo (root) privileges on all nodes
-6. Basic knowledge of Ansible and Kubernetes.
+    A stable internet connection
 
+    A control node (Ubuntu 24.04) with Ansible installed
 
-## Install Kubernetes Using Ansible on Ubuntu 24.04
+    At least two Ubuntu 24.04 nodes (1 Master + 1 Worker)
 
-Let’s proceed with the installation. First things first, update all nodes with the following command (below). Please read each instruction carefully before executing:
+    SSH access from the control node to all target nodes
 
-=>> sudo apt update -y && sudo apt upgrade -y
+    A non-root user with sudo privileges on all nodes
 
-=>> sudo adduser sysadmin  | create operational user 
+    Basic knowledge of Ansible and Kubernetes
 
-=>> sudo usermod -aG sudo sysadmin 
+⚙️ System Preparation
 
-First, update your package lists and install Ansible on your control node only:
+Perform these steps on all nodes unless specified otherwise.
+Step 1: Update Packages
 
-=>> sudo apt install ansible -y
+sudo apt update -y && sudo apt upgrade -y
 
-=>> ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+Step 2: Create Operational User
 
-=>> ssh-copy-id your_privileged_user@your_master_node_ip_address
+sudo adduser sysadmin
+sudo usermod -aG sudo sysadmin
 
-=>> ssh-copy-id your_privileged_user@your_worker_node_ip_address
+    Log in as sysadmin or configure Ansible to use this user for SSH connections.
 
-## Define Your Inventory File and create Ansible Role as per project structure
+🛠️ Install Ansible (Control Node Only)
 
-=>> ansible-galaxy init kubernetes_master
+sudo apt install ansible -y
 
-=>> ansible-galaxy init kubernetes_worker
+Generate SSH Key and Share with Nodes
 
-=>> ansible-galaxy init kubernetes_network
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+ssh-copy-id sysadmin@<master_node_ip>
+ssh-copy-id sysadmin@<worker_node_ip>
 
+📁 Project Structure and Ansible Roles
 
-## Now that we have reviewed each Ansible role necessary for configuring a Kubernetes cluster, we will proceed with executing the playbook as per below command
+Initialize the required roles:
 
-=>> ansible-playbook -i hosts cluster-setup.yml
+ansible-galaxy init kubernetes_master
+ansible-galaxy init kubernetes_worker
+ansible-galaxy init kubernetes_network
 
-## Use Kubectl Commands
+Create an inventory file (hosts) and a playbook (cluster-setup.yml) to organize and execute your deployment logic.
 
-=>> kubectl get nodes
+Example inventory (hosts):
 
-=>> kubectl get pods --all-namespaces
+[master]
+master-node ansible_host=<master_node_ip> ansible_user=sysadmin
 
-=>> kubectl get services
+[workers]
+worker-node ansible_host=<worker_node_ip> ansible_user=sysadmin
+
+▶️ Run the Ansible Playbook
+
+Execute the playbook to deploy the Kubernetes cluster:
+
+ansible-playbook -i hosts cluster-setup.yml
+
+🔍 Validate the Cluster
+
+Once deployment is complete, use kubectl to verify the setup:
+
+kubectl get nodes
+kubectl get pods --all-namespaces
+kubectl get services
+
+📌 Conclusion
+
+You’ve successfully deployed a Kubernetes cluster on Ubuntu 24.04 using Ansible. This automated method ensures consistency, reduces manual errors, and accelerates future scaling or changes.
+
+Feel free to contribute or expand this setup by adding roles for monitoring, logging, ingress controllers, or Helm.
